@@ -1,0 +1,45 @@
+/* ATTENTION : #04080c est aussi PALETTE.fond dans render.js (le canvas peint
+   son propre fond). Les deux doivent bouger ensemble, sinon le cadre et la
+   carte se désynchronisent sans aucune erreur visible. */
+.carte-atlas { display: flex; justify-content: center; }
+.carte-atlas canvas {
+  background: #04080c;
+  border: 1px solid #16323a;
+  border-radius: 4px;
+  cursor: grab;
+  max-width: 100%;
+}
+.carte-atlas canvas:active { cursor: grabbing; }
+
+/* Rien d'autre, et c'est voulu : le bloc ne produit qu'un canvas. Un menu
+   contextuel et un panneau de notes sans rattachement ont existé quelques
+   heures le 27/07 ; retirés sur demande (« je veux que la planète »), leurs
+   styles sont partis avec eux. Le code dort dans `actions.js`, non chargé. */
+
+.holomap-container { display: flex; justify-content: center; }
+
+/* Settings tab: collapsible sections generated from PARAMS's shape. */
+.holomap-group { margin: 0 0 8px 0; }
+.holomap-group > summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 4px 0;
+  list-style: none;
+}
+.holomap-group > summary::-webkit-details-marker { display: none; }
+.holomap-group > summary::before {
+  content: "▸";
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+.holomap-group[open] > summary::before { transform: rotate(90deg); }
+.holomap-group .holomap-group { margin-left: 16px; }
+
+/* Settings: search bar (holomap settings tab) */
+.holomap-search { border-top: none; padding-top: 0; }
+
+.holomap-group-icon { display: inline-flex; align-items: center; }
+.holomap-group-icon svg { width: 16px; height: 16px; }

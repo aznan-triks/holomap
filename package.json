@@ -1,0 +1,26 @@
+{
+  "name": "holomap",
+  "version": "0.1.0",
+  "description": "Obsidian plugin: the vault as a holographic planet.",
+  "license": "MIT",
+  "author": "aznan-triks",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aznan-triks/holomap.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aznan-triks/holomap/issues"
+  },
+  "keywords": ["obsidian", "obsidian-plugin", "graph-view", "visualization"],
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node esbuild.config.mjs production && node scripts/install-local.mjs",
+    "dev": "node esbuild.config.mjs",
+    "test": "node scripts/run-tests.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.23.0",
+    "obsidian": "latest"
+  }
+}

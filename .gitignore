@@ -1,0 +1,28 @@
+# npm
+node_modules/
+
+# Compiled output — convention des autres plugins Obsidian : le binaire vit
+# dans le vault (Obsitrois/.obsidian/plugins/holomap/), pas dans ce dépôt
+# source. `npm run build` régénère main.js localement pour copie manuelle ;
+# rien de tout ça n'est versionné ici.
+/main.js
+*.js.map
+
+# Données runtime Obsidian (réglages utilisateur écrits par saveData()) —
+# jamais du code source, ne doit jamais être commité.
+data.json
+.hotreload
+
+# OS / éditeur
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+
+# Notes internes de travail (mémoire outil → doublon projet, cf. CLAUDE.md du
+# vault) : ce dépôt vit sous un compte GitHub séparé (aznan-triks) du vault
+# (Arcxy2nd) précisément pour les garder distincts. CONTEXT.md/NEXT_SESSION.md
+# documentent le lien entre les deux comptes et des chemins machine
+# personnels — jamais publiables ici. Elles restent en local uniquement.
+CONTEXT.md
+NEXT_SESSION.md
