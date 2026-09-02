@@ -4,6 +4,6 @@
   "version": "0.1.0",
   "minAppVersion": "1.4.0",
   "description": "Renders your vault as a living holographic planet — territories sized by note weight, cities, transport network, and a player layer following the note you have open.",
-  "author": "Arcxy2nd",
+  "author": "aznan-triks",
   "isDesktopOnly": false
 }
