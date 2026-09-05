@@ -1,7 +1,7 @@
 {
   "id": "holomap",
   "name": "Holomap",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "minAppVersion": "1.4.0",
   "description": "Renders your vault as a living holographic planet — territories sized by note weight, cities, transport network, and a player layer following the note you have open.",
   "author": "aznan-triks",

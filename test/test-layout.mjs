@@ -942,10 +942,12 @@ check("relief: computed in under 150 ms at mount", Date.now() - tRelief0 < 150);
       const s = terrain.nearest(sitesV, indexV, v);
       return s < 0 || probeT.owner(sitesV[s * 3], sitesV[s * 3 + 1], sitesV[s * 3 + 2]) === i;
     };
-    let dp = 0, tp = 0, da = 0, dl = 0, tl = 0;
+    let dp = 0, tp = 0, da = 0, dl = 0, tl = 0, ds = 0, dsRaw = 0;
     confirmedTerminals.forEach((t, i) => {
       for (const p of t.ports) { tp++; if (!confirmed(p, i)) dp++; }
       if (!confirmed(t.airport, i)) da++;
+      if (!confirmed(t.station, i)) ds++;
+      if (!confirmed(many[i].v, i)) dsRaw++;
     });
     confirmedLights.forEach((pts, i) => {
       for (const [x, y] of pts) { tl++; if (!confirmed(toSphere(x, y, REAL), i)) dl++; }
@@ -961,6 +963,21 @@ check("relief: computed in under 150 ms at mount", Date.now() - tRelief0 < 150);
       da / confirmedTerminals.length < 0.25);
     check("lights: mismatch with the terrain mesh under 15% (measured ~14% before the fix)",
       dl / tl < 0.15);
+    // Station: before this fix it was written raw from `n.v`, with NO
+    // confirmation at all (unlike ports/airports/lights above) — `dsRaw`
+    // reproduces that old, unconfirmed behavior for comparison.
+    check("terminals: raw n.v (pre-fix behavior) does mismatch on this probe mesh (the test has teeth)",
+      dsRaw > 0);
+    check("terminals: station mismatch with the terrain mesh under 5% (raw n.v mismatched " + dsRaw + "/" + confirmedTerminals.length + ")",
+      ds / confirmedTerminals.length < 0.05);
+    // The station fallback must never land ON an already-chosen airport or
+    // port (the two checks near line 918 only exercise the OLD raw-`n.v`
+    // path, since they call seedTerminals without a terrain module — this is
+    // the one place the fallback itself actually runs).
+    check("terminals: with terrain, station still distinct from its own airport",
+      confirmedTerminals.every(t => distance2(t.airport, t.station) > 1e-8));
+    check("terminals: with terrain, station never confused with one of its own ports",
+      confirmedTerminals.every(t => t.ports.every(p => distance2(p, t.station) > 1e-8)));
   }
 }
 

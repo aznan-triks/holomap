@@ -1213,6 +1213,14 @@ function seedTerminals(grid, notes, PARAMS, terrain, meshHint) {
   // small to hold anything at a distance from the sea.
   const airportEdge = notes.map(() => null);
   const edgeScore = notes.map(() => -Infinity);
+  // Station fallback: unlike ports/airports/lights, the station was never
+  // confirmed against the terrain mesh at all — it was written straight from
+  // `n.v` (see "Confirmation against the terrain mesh" above). Same defect
+  // class, so same treatment: track, across every owned cell, the one
+  // CLOSEST to the note's own anchor that DOES confirm, to fall back to if
+  // the raw anchor itself doesn't.
+  const stationCandidate = notes.map(() => null);
+  const stationScore = notes.map(() => -Infinity);
 
   // User report: "some planes land too close to the edge". Correct, and it
   // was the rule itself: the airport was the innermost cell furthest along
@@ -1295,6 +1303,8 @@ function seedTerminals(grid, notes, PARAMS, terrain, meshHint) {
       const i = cells[gy * width + gx];
       if (i < 0) continue;
       const v = toSphere((gx + 0.5) * size, (gy + 0.5) * size, PARAMS);
+      const sDot = v[0] * notes[i].v[0] + v[1] * notes[i].v[1] + v[2] * notes[i].v[2];
+      if (sDot > stationScore[i] && confirmedByTerrain(v, i)) { stationScore[i] = sDot; stationCandidate[i] = v; }
       if (sea(gx + 1, gy) || sea(gx - 1, gy) || sea(gx, gy + 1) || sea(gx, gy - 1)) {
         coasts[i].push(v);
         if (pureTerritory(gx, gy, i, portSetback)) {
@@ -1342,7 +1352,14 @@ function seedTerminals(grid, notes, PARAMS, terrain, meshHint) {
     // simply not be drawn.
     // Cascading fallback: full inland, else any inland cell, else the city —
     // a transport with no terminal would no longer be drawn at all.
-    const result = { station: [n.v[0], n.v[1], n.v[2]],
+    // Station: the raw anchor `n.v` first — it's the point already meant to
+    // sit at the territory's heart — but only if the terrain mesh agrees
+    // (see "Confirmation against the terrain mesh" above); otherwise the
+    // closest confirmed cell found during the scan, same cascading spirit as
+    // airport/ports just below.
+    const rawStation = [n.v[0], n.v[1], n.v[2]];
+    const station = confirmedByTerrain(n.v, i) ? rawStation : (stationCandidate[i] || rawStation);
+    const result = { station,
                 airport: airport[i] || airportEdge[i] || [n.v[0], n.v[1], n.v[2]],
                 ports };
     n.terminals = result;

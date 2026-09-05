@@ -1592,6 +1592,10 @@ function mount(root, model, PARAMS, app) {
   // and planted the star at the center — you'd lose track of where you were,
   // and the map, the actual subject, disappeared.
   const NETWORK_THRESHOLD = () => PARAMS.zoom.countryThreshold * 1.6;
+  // Registry index for the core (focused) card, distinct from both a
+  // neighbor's loop index (0, 1, 2…) and `anim.hoverCard`'s "nothing hovered"
+  // sentinel (-1).
+  const CORE_CARD_I = -2;
 
   // Network-view strength (0 = not yet, 1 = full). Kept apart from drawing
   // because the BACKDROP needs it — it tells the network strokes to fade
@@ -1780,7 +1784,16 @@ function mount(root, model, PARAMS, app) {
       g.globalAlpha = a;
       if (k > 0.85) anim.network.cards.push({ ...b, note: v, i });
     });
-    card(cx, cy, focus, true, ease(progress(t, anim.network.t0, F.unfold)), false);
+    // The core card must be pushed into the SAME registry as its neighbors,
+    // the same way (open enough to be clickable, k > 0.85): it used to be
+    // drawn without ever being recorded, so a click inside its own visible
+    // edges found nothing there and fell through to whatever note sits on
+    // the map underneath it. Hover-dim styling is untouched on purpose — the
+    // `hot` argument stays `false`, exactly as before this fix; that's a
+    // separate visual concern, not what was reported broken.
+    const coreK = ease(progress(t, anim.network.t0, F.unfold));
+    const coreBox = card(cx, cy, focus, true, coreK, false);
+    if (coreK > 0.85) anim.network.cards.push({ ...coreBox, note: focus, i: CORE_CARD_I });
     g.restore();
   }
 
